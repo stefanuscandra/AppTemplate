@@ -19,7 +19,7 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideRetrofitBuilder(): Retrofit {
-        val baseUrl = "https://"
+        val baseUrl = "https://api.data.gov.sg/v1/"
 
         val moshi = Moshi.Builder()
             .add(KotlinJsonAdapterFactory())
