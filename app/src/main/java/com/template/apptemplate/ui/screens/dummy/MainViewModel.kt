@@ -1,4 +1,4 @@
-package com.template.apptemplate.ui
+package com.template.apptemplate.ui.screens.dummy
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
