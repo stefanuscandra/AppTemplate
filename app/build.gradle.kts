@@ -55,6 +55,7 @@ android {
 
 dependencies {
     implementation(libs.material)
+    implementation(files("libs/sdklib-debug.aar"))
 
     // android
     implementation(libs.androidx.appcompat)
