@@ -10,6 +10,7 @@ import com.template.apptemplate.domain.repository.BookingRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -33,17 +34,17 @@ class BookingViewModel @Inject constructor(
 
 
     init {
-        listOf(
-            getDriverInfo(),
-            getPaymentInfo(),
-            getPromoInfo(),
-            getTripInfo()
-        )
+        getDriverInfo()
+        getPaymentInfo()
+        getPromoInfo()
+        getTripInfo()
     }
 
-    private fun getDriverInfo() {
+    internal fun getDriverInfo() {
         viewModelScope.launch {
-            repository.getDriverInfo().collect { result ->
+            repository.getDriverInfo().catch {
+                _driverInfo.update { null }
+            }.collect { result ->
                 _driverInfo.update { result }
             }
         }
@@ -51,7 +52,9 @@ class BookingViewModel @Inject constructor(
 
     private fun getPaymentInfo() {
         viewModelScope.launch {
-            repository.getPayment().collect { result ->
+            repository.getPayment().catch {
+                _paymentInfo.update { null }
+            }.collect { result ->
                 _paymentInfo.update { result }
             }
         }
@@ -59,7 +62,9 @@ class BookingViewModel @Inject constructor(
 
     private fun getPromoInfo() {
         viewModelScope.launch {
-            repository.getPromo().collect { result ->
+            repository.getPromo().catch {
+                _promoInfo.update { null }
+            }.collect { result ->
                 _promoInfo.update { result }
             }
         }
@@ -67,7 +72,9 @@ class BookingViewModel @Inject constructor(
 
     private fun getTripInfo() {
         viewModelScope.launch {
-            repository.getTrip().collect { result ->
+            repository.getTrip().catch {
+                _tripInfo.update { null }
+            }.collect { result ->
                 _tripInfo.update { result }
             }
         }
