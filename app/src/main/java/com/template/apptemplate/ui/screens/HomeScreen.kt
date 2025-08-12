@@ -88,9 +88,12 @@ private fun HomeContent(
         ) {
             item { ProfileView(name = driverInfo?.name.orEmpty(), image = driverInfo?.image.orEmpty()) }
             item {
+                val point = if (promoInfo?.point != null) {
+                    promoInfo.point.toString()
+                } else ""
                 PromoView(
                     promoName = promoInfo?.title.orEmpty(),
-                    promoPoint = promoInfo?.point.toString(),
+                    promoPoint = point,
                     image = promoInfo?.image.orEmpty()
                 )
             }

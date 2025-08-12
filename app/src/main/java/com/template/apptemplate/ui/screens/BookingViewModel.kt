@@ -8,9 +8,11 @@ import com.example.sdklib.PromoResponse
 import com.example.sdklib.TripDetailsResponse
 import com.template.apptemplate.domain.repository.BookingRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -31,7 +33,6 @@ class BookingViewModel @Inject constructor(
 
     private val _tripInfo = MutableStateFlow<TripDetailsResponse?>(null)
     val tripInfo = _tripInfo.asStateFlow()
-
 
     init {
         getDriverInfo()
@@ -77,6 +78,30 @@ class BookingViewModel @Inject constructor(
             }.collect { result ->
                 _tripInfo.update { result }
             }
+        }
+    }
+
+    // EXAMPLE ASYNC
+    private fun getBookingData() {
+        viewModelScope.launch {
+            val driverDeferred = async {
+                // runCatching biar kalau 1 async failed ga break all coroutine
+                runCatching { repository.getDriverInfo().first() }.getOrNull()
+            }
+            val paymentDeferred = async {
+                runCatching { repository.getPayment().first() }.getOrNull()
+            }
+            val promoDeferred = async {
+                runCatching { repository.getPromo().first() }.getOrNull()
+            }
+            val tripDeferred = async {
+                runCatching { repository.getTrip().first() }.getOrNull()
+            }
+
+            _driverInfo.update { driverDeferred.await() }
+            _paymentInfo.update { paymentDeferred.await() }
+            _promoInfo.update { promoDeferred.await() }
+            _tripInfo.update { tripDeferred.await() }
         }
     }
 }
