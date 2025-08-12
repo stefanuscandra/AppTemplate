@@ -1,3 +1,7 @@
 package com.template.apptemplate.ui.screens
 
-data class HomeState()
+import com.template.apptemplate.data.network.response.readings.ReadingItem
+
+data class HomeState(
+    var readings: List<ReadingItem> = emptyList()
+)
