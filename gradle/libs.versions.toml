@@ -14,6 +14,7 @@ composeCoil = "2.4.0"
 composeHiltNavigation = "1.2.0"
 composeLifecycle = "2.7.0"
 composeNavigation = "2.7.7"
+composeMaps = "6.1.0"
 
 chucker = "3.5.2"
 
@@ -62,6 +63,7 @@ compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 compose-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "composeNavigation" }
 compose-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 compose-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+compose-maps = { module = "com.google.maps.android:maps-compose", version.ref = "composeMaps" }
 
 # hilt
 hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
