@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -23,12 +22,16 @@ import com.google.maps.android.compose.rememberCameraPositionState
 
 @Composable
 fun GNSSMapScreen(
+    modifier: Modifier = Modifier,
     gnssData: GNSSData,
 ) {
-    var lastLocation by remember { mutableStateOf(gnssData.location) }
+    var lastLocation by remember(gnssData.location) { mutableStateOf(gnssData.location) }
 
     val cameraPositionState = rememberCameraPositionState()
-    Box(modifier = Modifier.fillMaxWidth().height(300.dp)) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+    ) {
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
