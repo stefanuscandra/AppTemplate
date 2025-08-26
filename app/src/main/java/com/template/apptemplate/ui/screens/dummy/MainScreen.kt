@@ -63,8 +63,9 @@ fun MainScreen(navController: NavController) {
                 modifier = Modifier.padding(horizontal = 16.dp),
                 text = "Satellites used in fix : ${gnssData.usedSatellites.takeIf { it != 0 } ?: '-'}"
             )
-            ItemView(gnssData.location.toString())
-
+            ItemView("Lat : ${gnssData.location?.latitude ?: '-'}")
+            ItemView("Long : ${gnssData.location?.longitude ?: '-'}")
+            ItemView("Acc : ${gnssData.location?.accuracy ?: '-'}")
             GNSSMapScreen(
                 modifier = Modifier.fillMaxHeight(),
                 gnssData = gnssData,
