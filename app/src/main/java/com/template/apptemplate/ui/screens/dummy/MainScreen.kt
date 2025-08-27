@@ -1,6 +1,7 @@
 package com.template.apptemplate.ui.screens.dummy
 
 import android.Manifest
+import android.location.Location
 import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -34,8 +35,18 @@ import com.template.apptemplate.ui.ui.theme.AppTemplateTheme
 fun MainScreen(navController: NavController) {
     val viewModel: MainViewModel = hiltViewModel()
     val data by viewModel.data.collectAsStateWithLifecycle()
-
     val context = LocalContext.current
+
+    var distanceGNSS by remember { mutableStateOf<Float?>(null) }
+    var distanceGPS by remember { mutableStateOf<Float?>(null) }
+
+    var gpsLocation by remember { mutableStateOf<Location?>(null) }
+
+    val locationHelper = remember { LocationHelper(context = context) }
+    locationHelper.getLocationCallback(onUpdated = { location ->
+        gpsLocation = location
+    })
+
     var gnssData by remember { mutableStateOf(GNSSData(null, 0)) }
 
     GNSS.init(context) {
@@ -66,24 +77,33 @@ fun MainScreen(navController: NavController) {
             ItemView("Lat : ${gnssData.location?.latitude ?: '-'}")
             ItemView("Long : ${gnssData.location?.longitude ?: '-'}")
             ItemView("Acc : ${gnssData.location?.accuracy ?: '-'}")
+            ItemView("Distance GNSS : ${distanceGNSS ?: '-'} m")
+            ItemView("Distance GPS : ${distanceGPS ?: '-'} m")
+
             GNSSMapScreen(
                 modifier = Modifier.fillMaxHeight(),
                 gnssData = gnssData,
+                gpsLocation = gpsLocation,
+                onDistanceGNSSChanged = {
+                    distanceGNSS = it
+                },
+                onDistanceGPSChanged = {
+                    distanceGPS = it
+                }
             )
         }
     }
 }
 
 @Composable
-private fun ItemView(id: String, onClick: (String) -> Unit = {}) {
+private fun ItemView(title: String, onClick: (String) -> Unit = {}) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
-            .clickable {
-                onClick.invoke(id)
-            }) {
-        Text(text = "location: $id")
+            .clickable { onClick.invoke(title) }
+    ) {
+        Text(text = title)
         HorizontalDivider()
     }
 }

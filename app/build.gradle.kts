@@ -93,6 +93,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.compose.preview)
     implementation(libs.compose.material3)
+    implementation(libs.play.services.location)
     testImplementation(libs.hilt.testing)
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
