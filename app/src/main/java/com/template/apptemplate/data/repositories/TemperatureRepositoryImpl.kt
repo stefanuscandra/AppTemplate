@@ -21,6 +21,6 @@ class TemperatureRepositoryImpl(private val apiService: ApiService) : Temperatur
             throw HttpException(response)
         }
     }.catch {
-        throw it
+        println("cek error: ${it.message}")
     }.flowOn(Dispatchers.IO)
 }

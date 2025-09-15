@@ -31,16 +31,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.template.apptemplate.ui.ui.theme.AppTemplateTheme
 
 @RequiresPermission(Manifest.permission.ACCESS_FINE_LOCATION)
 @Composable
 fun MainScreen(navController: NavController) {
-    val viewModel: MainViewModel = hiltViewModel()
-    val data by viewModel.data.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     var selectedLocationTarget by remember { mutableStateOf<LocationTarget?>(null) }
