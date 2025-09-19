@@ -15,6 +15,7 @@ composeHiltNavigation = "1.2.0"
 composeLifecycle = "2.7.0"
 composeNavigation = "2.7.7"
 composeMaps = "6.1.0"
+composeAccompanist = "0.37.3"
 
 chucker = "3.5.2"
 
@@ -107,6 +108,7 @@ androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
+compose-accompanist-permission = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "composeAccompanist" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

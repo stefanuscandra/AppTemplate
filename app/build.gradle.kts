@@ -70,9 +70,6 @@ dependencies {
     // compose
     api(platform(libs.compose.bom))
     api(libs.compose.activity)
-
-    api(platform(libs.compose.bom))
-    api(libs.compose.activity)
     api(libs.compose.coil)
     api(libs.compose.hilt.navigation)
     api(libs.compose.lifecycle.viewmodel)
@@ -83,6 +80,7 @@ dependencies {
     api(libs.compose.preview)
     api(libs.compose.tooling)
     api(libs.compose.maps)
+    api(libs.compose.accompanist.permission)
 
     // hilt
     implementation(libs.hilt)

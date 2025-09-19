@@ -2,6 +2,7 @@ package com.template.apptemplate.ui.screens.dummy
 
 import android.Manifest
 import android.location.Location
+import android.widget.Toast
 import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -12,25 +13,35 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import com.template.apptemplate.ui.ui.theme.AppTemplateTheme
 
@@ -47,9 +58,6 @@ fun MainScreen(navController: NavController) {
     var gpsLocation by remember { mutableStateOf<Location?>(null) }
 
     val locationHelper = remember { LocationHelper(context = context) }
-    locationHelper.getLocationCallback(onUpdated = { location ->
-        gpsLocation = location
-    })
 
     var gnssData by remember { mutableStateOf(GNSSData(null, 0)) }
 
@@ -57,9 +65,14 @@ fun MainScreen(navController: NavController) {
         gnssData = it
     }
 
-    LaunchedEffect(Unit) {
-        GNSS.start()
-    }
+    LocationPermissionHelper(
+        onGranted = {
+            locationHelper.getLocationCallback(onUpdated = { location ->
+                gpsLocation = location
+            })
+            GNSS.start()
+        },
+    )
 
     DisposableEffect(Unit) {
         onDispose {
@@ -116,7 +129,78 @@ private fun TargetLocationPicker(
     selectedLocationTarget: LocationTarget? = null,
     onSelectedLocationTarget: (LocationTarget) -> Unit = {},
 ) {
+    val context = LocalContext.current
+
     var expanded by remember { mutableStateOf(false) }
+    var isCustomLocationSelected by remember { mutableStateOf(false) }
+    var customLocationValue by remember { mutableStateOf(TextFieldValue()) }
+
+    val onSaveValue: () -> Unit = {
+        runCatching {
+            val value = customLocationValue.text.split(",")
+
+            val lat = value[0].toDoubleOrNull() ?: 0.0
+            val lng = value[1].toDoubleOrNull() ?: 0.0
+            val locationTarget = LocationTarget("Custom", lat, lng)
+
+            onSelectedLocationTarget.invoke(locationTarget)
+            isCustomLocationSelected = false
+        }.onFailure {
+            Toast.makeText(context, "Format Lokasi ada yg salah", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    if (isCustomLocationSelected) {
+        Dialog(onDismissRequest = { isCustomLocationSelected = false }) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text(text = "Masukkan Latitude dan Longitude\nContoh: -6.199411, 106.821869")
+
+                    TextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        keyboardActions = KeyboardActions(
+                            onDone = { onSaveValue.invoke() }
+                        ),
+                        singleLine = true,
+                        placeholder = { Text(text = "Masukkan disini") },
+                        trailingIcon = {
+                            if (customLocationValue.text.isNotEmpty()) {
+                                Icon(
+                                    modifier = Modifier.clickable {
+                                        customLocationValue = customLocationValue.copy(text = "")
+                                    },
+                                    imageVector = Icons.Default.Clear,
+                                    contentDescription = ""
+                                )
+                            }
+                        },
+                        value = customLocationValue,
+                        onValueChange = { customLocationValue = it }
+                    )
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
+                        Button(
+                            enabled = customLocationValue.text.isNotEmpty(),
+                            onClick = { onSaveValue.invoke() }
+                        ) {
+                            Text(text = "Simpan")
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     Box(
         modifier = modifier
@@ -151,7 +235,11 @@ private fun TargetLocationPicker(
                 DropdownMenuItem(
                     text = { Text(item.name) },
                     onClick = {
-                        onSelectedLocationTarget.invoke(item)
+                        if (item.lat == 0.0 && item.lng == 0.0) {
+                            isCustomLocationSelected = true
+                        } else {
+                            onSelectedLocationTarget.invoke(item)
+                        }
                         expanded = false
                     }
                 )
@@ -184,7 +272,7 @@ private fun ItemView(title: String, onClick: (String) -> Unit = {}) {
 
 @Preview(showBackground = true)
 @Composable
-fun ItemViewPreview() {
+private fun ItemViewPreview() {
     AppTemplateTheme {
         ItemView("Android")
     }
